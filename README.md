@@ -80,6 +80,8 @@ You should get the "Hello World!" page in response.
 
 ├── README.md
 
+├── architecture.png
+
 ├── app
 
 │   ├── Dockerfile
