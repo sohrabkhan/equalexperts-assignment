@@ -18,9 +18,6 @@ image: ## Builds a docker image for the solution
 run: ## Run the app directly in a docker container. You should be able to access the app using http://localhost:8080
 	docker run -d -p 8080:8080 sohrabkhan/python-helloworld
 
-stop: ## Stop the running docker container
-	docker stop ${docker ps -a | grep sohrabkhan/python-helloworld | awk '{print $1}'}
-
 install: ## Install the helm chart
 	helm upgrade --install equalexperts ./helloworld-chart -f ./helloworld-chart/values.yaml
 

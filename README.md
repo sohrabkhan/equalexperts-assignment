@@ -61,6 +61,20 @@ If you need any help run the following command:
 make help
 ```
 
+## Running the solution
+It is important to have minikube installed and running on your computer, the /etc/hosts entry in place and any other 
+dependencies are installed as listed in the pre-requisites section above. 
+
+Run the following command to install the solution on Minikube:
+```
+make install
+```
+
+Wait for the pods to download the container images and become ready and running.
+
+Next open up a browser and enter the address: http://equal-experts-helloworld.com.
+You should get the "Hello World!" page in response.
+
 ## Directory Structure
 ├── Makefile
 
@@ -142,6 +156,12 @@ As an entry point the "uswgi" application is used.
 
 For command arguments the `--ini uwsgi.ini` is used.
 
+## Helm Chart
+A minimal helm chart is used for hosting the static application. A minimal helm chart was created using the command:
+```
+helm create helloworld-chart
+```
+This chart contained alot of extra configuration which has been removed to keep the chart as simple as possible.
 
 ## Architecture
 The architecture is kept as simple as possible but not compromising on DevOps principles and practices.
@@ -154,8 +174,30 @@ the application should not experience any downtime.
 
 To offer a production like experience we need a hosts entry to be set as explained in the pre-requisites section above.
 
-A Kubernetes Ingress is used to 
+The following is how the flow of request from Browser to application happens:
+1. A browser is opened and given the address http://equal-experts-helloworld.com to navigate to.
+2. The first location where the DNS resolution is checked is the /etc/hosts file where an entry for the DNS record is found. The hosts file return the IP address for the DNS record to the browser.
+3. The browser can now send the HTTP Get request to the Minikube where an Ingress resource resides containing the target for equal-experts-helloworld.com.
+4. The target for the ingress host section is the service which is pointing to the Deployment and contains the addresses of all pods of the Deployment.
+5. The Service ensures that it contain the addresses of only the pods that are ready and running, so in case any pod is unhealthy that pod is not listed. The HTTP GET request lands on each of the pod.
+
 ![alt text](architecture.png)
 
-## Helm Chart
-A minimal helm chart is used for hosting the static application.  
+## Uninstall
+After checking the solution it is important to cleanup any used resources. Run the following commands to cleanup all 
+resources that are created by this assignment:
+
+1. Uninstall helm chart
+```
+make uninstall
+```
+
+2. Stop any running docker container if launched:
+```
+docker stop $(docker ps -a | grep sohrabkhan/python-helloworld | awk '{print $1}')
+```
+
+3. Now remove any stopped containers, unused images and unused networks:
+```
+docker system prune
+```
