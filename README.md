@@ -12,7 +12,6 @@ Write a simple hello world application in any one of these languages: Python, Ru
 
 ## Pre-requisites
 Ensure you've the following installed:
-* Helm CLI
 * Kubectl CLI
 * Minikube
 * Docker
@@ -40,7 +39,7 @@ C:\Windows\System32\drivers\etc\hosts
 ```
 
 ## Installation
-To install the supplied helm chart run the following command:
+To install the supplied Kubernetes resources run the following command:
 ```
 make install
 ```
@@ -82,6 +81,8 @@ You should get the "Hello World!" page in response.
 
 ├── architecture.png
 
+├── k8s-resources.yaml
+
 ├── app
 
 │   ├── Dockerfile
@@ -94,45 +95,12 @@ You should get the "Hello World!" page in response.
 
 │   └── uwsgi.ini
 
-├── helloworld-chart
-
-│   ├── Chart.yaml
-
-│   ├── charts
-
-│   ├── template.yaml
-
-│   ├── templates
-
-│   │   ├── NOTES.txt
-
-│   │   ├── _helpers.tpl
-
-│   │   ├── deployment.yaml
-
-│   │   ├── hpa.yaml
-
-│   │   ├── ingress.yaml
-
-│   │   ├── service.yaml
-
-│   │   ├── serviceaccount.yaml
-
-│   │   └── tests
-
-│   │       └── test-connection.yaml
-
-│   └── values.yaml
 
 ### Makefile
 A makefile has been provided which helps in running the most complex commands much easier.
 
 ### App/
 This directory contains the Python Hellow World App
-
-### Helloworld-chart
-This directory contains the helm chart with Kubernetes resources
-
 
 ## Application
 I chose to create the python web application using Flask framework because it's a very light weight and requires minimal
@@ -158,12 +126,21 @@ As an entry point the "uswgi" application is used.
 
 For command arguments the `--ini uwsgi.ini` is used.
 
-## Helm Chart
-A minimal helm chart is used for hosting the static application. A minimal helm chart was created using the command:
+## Kubernetes Resources
+All of the Kubernetes resources are placed in the k8s-resources.yaml file. To create these resources inside Minikube run 
+the following command:
 ```
-helm create helloworld-chart
+make install
 ```
-This chart contained alot of extra configuration which has been removed to keep the chart as simple as possible.
+or run the full command:
+```
+kubectl apply -f k8s-resources
+```
+By running either of the above commands the following 3 Kubernetes resources are created:
+1. Namespace
+2. Deployment
+3. Service
+4. Ingress
 
 ## Architecture
 The architecture is kept as simple as possible but not compromising on DevOps principles and practices.
@@ -172,7 +149,10 @@ A Deployment Kubernetes resource is used for the application as the application 
 was stateful we would have used Statefulset. A minimum of 2 replicas are used for the deployment which means that at a 
 minimum 2 pods would be used to serve the application, thereby making the application highly available, scalable and 
 more resiliant. A deployment update strategy of Rolling Update is used, which would mean that even during an update at 
-the application should not experience any downtime.
+the application should not experience any downtime. 
+
+The ingress Kubernetes resources ensures that all traffic is 
+loadblanced between the 2 pods.
 
 To offer a production like experience we need a hosts entry to be set as explained in the pre-requisites section above.
 
@@ -189,7 +169,7 @@ The following is how the flow of request from Browser to application happens:
 After checking the solution it is important to cleanup any used resources. Run the following commands to cleanup all 
 resources that are created by this assignment:
 
-1. Uninstall helm chart
+1. Uninstall Kubernetes resources:
 ```
 make uninstall
 ```

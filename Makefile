@@ -2,7 +2,7 @@
 
 .PHONY: all
 
-EXECUTABLES = docker helm kubectl
+EXECUTABLES = docker kubectl
 K := $(foreach exec,$(EXECUTABLES),\
         $(if $(shell which $(exec)),,$(error "No $(exec) in PATH. Please refer to the readme file to install $(exec)")))
 
@@ -18,11 +18,8 @@ image: ## Builds a docker image for the solution
 run: ## Run the app directly in a docker container. You should be able to access the app using http://localhost:8080
 	docker run -d -p 8080:8080 sohrabkhan/python-helloworld
 
-install: ## Install the helm chart
-	helm upgrade --install equalexperts ./helloworld-chart -f ./helloworld-chart/values.yaml
+install: ## Install the kubernetes resources. Then access the python helloworld application by adding a /etc/hosts entry and browse to http://equal-experts-helloworld.com
+	kubectl apply -f k8s-resources.yaml
 
-uninstall:
-	helm uninstall equalexperts
-
-template: ## Create a template file
-	helm template ./helloworld-chart/ -n dev -f ./helloworld-chart/values.yaml > ./helloworld-chart/template.yaml
+uninstall: ## Uninstall all kubernetes resources
+	kubectl delete -f k8s-resources.yaml

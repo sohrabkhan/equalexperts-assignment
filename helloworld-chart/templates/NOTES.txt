@@ -1,9 +1,0 @@
-In order to get access the web application perform the following:
-1. Fetch the minikube IP by executing the command:
-  minikube ip
-
-2. Add the minikube ip retrieved in step 1 to your Hosts file (Mac/Linux: /etc/hosts):
-  <IP ADDRESS>     equal-experts-helloworld.com
-
-3. Access the webapplication from:
-  echo http://equal-experts-helloworld.com
